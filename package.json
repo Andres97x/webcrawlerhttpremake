@@ -1,0 +1,26 @@
+{
+  "name": "webcrawlerhttpremake",
+  "version": "1.0.0",
+  "description": "Project to learn http",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "node jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Andres97x/webcrawlerhttpremake.git"
+  },
+  "author": "Andres",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Andres97x/webcrawlerhttpremake/issues"
+  },
+  "homepage": "https://github.com/Andres97x/webcrawlerhttpremake#readme",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "jsdom": "^20.0.3"
+  }
+}
