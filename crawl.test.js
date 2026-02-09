@@ -1,4 +1,4 @@
-const { normalizeURL, getURLsFromHTML } = require("./crawl.js");
+const { normalizeURL, getURLsFromHTML, crawlPage } = require("./crawl.js");
 
 test("normalize url", () => {
   const input = "https://wagslane.dev";
