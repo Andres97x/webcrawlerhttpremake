@@ -1,28 +1,55 @@
 const { JSDOM } = require("jsdom");
 
-async function crawlPage(baseURL) {
-  console.log(`actively crawling page: ${baseURL}`);
-  try {
-    const res = await fetch(baseURL);
+async function crawlPage(baseURL, currentURL, pages = {}) {
+  // for recursion
+  // base condition -> if (the URL we are crawling has already been crawled) && if (we are crawling an external URL)
+  // recursive -> basically we are going to recusively crawl these pages until all of the link fall in one of these conditions.
 
-    const resType = res.headers.get("content-type");
-    if (!resType.includes("text/html")) {
+  const baseURLHostname = new URL(baseURL).hostname;
+  const currentURLHostname = new URL(currentURL).hostname;
+  if (currentURLHostname !== baseURLHostname) {
+    // check if URL is external
+    return pages;
+  }
+
+  const normalizedCurrentURL = normalizeURL(currentURL);
+  if (pages[normalizedCurrentURL] > 0) {
+    // check if URL has already been crawled
+    pages[normalizedCurrentURL]++;
+    return pages;
+  }
+  pages[normalizedCurrentURL] = 1;
+
+  try {
+    console.log(`actively crawling page: ${currentURL}`);
+    const res = await fetch(currentURL);
+
+    const contentType = res.headers.get("content-type");
+    if (!contentType.includes("text/html")) {
       // check that response is of type text/html
-      console.log(`non-text/html response type, response type: ${resType}`);
-      return;
+      console.log(`non-text/html response type, response type: ${contentType}`);
+      return pages;
     }
 
     if (res.status > 399) {
-      // check for status code
-      console.log(`Bad status code received: ${res.status}`);
-      return;
+      // check for bad status code
+      console.log(
+        `Bad status code received: ${res.status}, on page ${currentURL}`
+      );
+      return pages;
     }
 
     const htmlBody = await res.text();
     const urls = getURLsFromHTML(htmlBody, baseURL);
-    return urls;
+
+    // recursively crawlPage()
+    for (const nextUrl of urls) {
+      await crawlPage(baseURL, nextUrl, pages);
+    }
+
+    return pages;
   } catch (err) {
-    console.log(err.message);
+    console.log(`Error in fetch: ${err.message}, on page ${currentURL}`);
   }
 }
 
